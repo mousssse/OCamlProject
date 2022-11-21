@@ -38,6 +38,20 @@ let write_file path graph =
   close_out ff ;
   ()
 
+let export path graph = 
+  let dot_file = open_out path in
+
+  fprintf dot_file "/* This is a dot format graph. */\n";
+  fprintf dot_file "digraph finite_state_machine {\n	rankdir=LR;\n    ";
+
+  n_iter graph (fun id -> fprintf dot_file "%d " id);
+  fprintf dot_file ";\n";
+  e_iter graph (fun id1 id2 cost -> fprintf dot_file "    %d -> %d [label = %s];\n" id1 id2 cost);
+
+  fprintf dot_file "}";
+  close_out dot_file ;
+  ()
+
 (* Reads a line with a node. *)
 let read_node id graph line =
   try Scanf.sscanf line "n %f %f" (fun _ _ -> new_node graph id)
