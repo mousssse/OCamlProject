@@ -25,6 +25,10 @@ let () =
   let graph = from_file infile in
 
   (*let clone_nodes_test = clone_nodes graph in*)
+  (*let gmap_graph = gmap graph (fun x -> x^"!") in*)
+
+  (*let int_graph = gmap graph int_of_string in
+    let graph_plus_100 = gmap (add_arc int_graph 3 1 100) string_of_int in*)
 
   (* Rewrite the graph that has been read and potentially modified. *)
   let () = export outfile graph in
