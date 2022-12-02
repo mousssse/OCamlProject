@@ -9,5 +9,8 @@ type path = id list
  *
  *  forbidden is a list of forbidden nodes (they have already been visited)
  *)
- val path_to_file : string -> path -> unit
+ (*val path_to_string : id -> path option -> string*)
  val find_path: int graph -> id list -> id -> id -> path option
+ val get_min_flow_path: int graph -> int -> id -> path -> int
+ val build_residual_graph: int graph -> int -> id -> path -> int graph
+ val fordfulkerson: int graph -> int -> int -> int graph

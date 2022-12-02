@@ -18,8 +18,8 @@ let () =
   and outfile = Sys.argv.(4)
 
   (* These command-line arguments are not used for the moment. *)
-  and _source = int_of_string Sys.argv.(2)
-  and _sink = int_of_string Sys.argv.(3)
+  and source = int_of_string Sys.argv.(2)
+  and sink = int_of_string Sys.argv.(3)
   in
 
   (* Open file *)
@@ -32,12 +32,17 @@ let () =
     (*let graph_plus_100 = gmap (add_arc int_graph 3 1 100) string_of_int in*)
     (*let graph_plus_100 = gmap (add_arc int_graph 2 5 100) string_of_int in*)
 
-  let path_test = find_path int_graph [] 3 5 in
-  let () = path_to_file outfile (Option.get path_test) in 
-  ()
+
+  (*let path_test = find_path int_graph [] source sink in
+  Printf.printf "path: %s\n%!" (path_to_string source path_test);
+
+  let path = Option.get path_test in
+  let flow_val = get_min_flow_path int_graph 1000 source path in
+  let residual_graph = build_residual_graph int_graph flow_val source path in*)
+
+  let final_graph = fordfulkerson int_graph source sink in
 
   (* Rewrite the graph that has been read and potentially modified. *)
-  (*let () = export outfile graph in
-
-    ()*)
+  let () = export outfile (gmap final_graph string_of_int) in
+  ()
 
