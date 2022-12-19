@@ -1,0 +1,15 @@
+/* This is a dot format graph. */
+digraph finite_state_machine {
+	rankdir=LR;
+    3 1 2 4 0 5 ;
+    3 -> 2 [label = "0/2"];
+    3 -> 4 [label = "0/5"];
+    3 -> 1 [label = "10/11"];
+    1 -> 4 [label = "0/1"];
+    1 -> 5 [label = "17/21"];
+    2 -> 4 [label = "8/12"];
+    4 -> 5 [label = "8/14"];
+    0 -> 2 [label = "8/8"];
+    0 -> 1 [label = "7/7"];
+    0 -> 3 [label = "10/10"];
+}

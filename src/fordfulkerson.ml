@@ -35,7 +35,7 @@ let rec find_path (gr: int graph) (forbidden_nodes: id list) (from_id: id) (to_i
         let following_path = find_path gr (List.append forbidden_nodes [id] ) id to_id in
         if following_path = None then loop rest_arcs else following_path
   in
-  
+
   let out_arcs = out_arcs gr from_id in
   loop out_arcs
 
@@ -53,11 +53,11 @@ let rec get_min_flow_path (graph: int graph) (acu: int) (from_id: id) = function
 (* the init graph will create itself *)
 (* Updates in and out arcs on the path with the update of flow value to build the new residual graph *)
 let rec build_residual_graph (graph: int graph) (flow_val: int) (from_id: id) = function
-    | [] -> graph
-    | to_id :: rest_path ->
-      let update_in_arc = add_arc graph to_id from_id flow_val in
-      let update_out_arc = add_arc update_in_arc from_id to_id (-flow_val) in
-      build_residual_graph update_out_arc flow_val to_id rest_path
+  | [] -> graph
+  | to_id :: rest_path ->
+    let update_in_arc = add_arc graph to_id from_id flow_val in
+    let update_out_arc = add_arc update_in_arc from_id to_id (-flow_val) in
+    build_residual_graph update_out_arc flow_val to_id rest_path
 
 
 let init_acu (graph: int graph) (source: id) (first_id_in_path: id) =
@@ -79,3 +79,27 @@ let fordfulkerson (graph: int graph) (source: id) (destination: id) =
   in
 
   loop graph source destination
+
+
+(* creates a string graph from the final flow graph with max_flow/capacity labelled arcs *)
+let get_final_string_graph (init_graph: int graph) (ff_graph: int graph) = 
+
+  (* For a given flow arc, will create the flow/capacity arc on the initial graph *)
+  let create_arcs (init_graph: string graph) (from_id: id) (to_id: id) (flow: string) =
+    (* The arcs containing the flow are the ones that are in the opposite directions
+       from the arcs inside of the initial graph *)
+    match find_arc init_graph to_id from_id with 
+    | Some(capacity) -> new_arc (init_graph) (to_id) (from_id) ("\"" ^ flow ^ "/" ^ capacity ^ "\"")
+    | None -> init_graph
+  in
+
+  (* For the arcs with no flow going through them, will create a 0/capacity label *)
+  let create_null_flow_arcs (final_graph: string graph) (from_id: id) (to_id: id) (label: string) =
+    (* The arcs with no flow are the ones that haven't changed in the inital graph, they dont contain a '/' yet *)
+    if String.contains_from label 0 '/' then final_graph
+    else new_arc (final_graph) (from_id) (to_id) ("\"0/" ^ label ^ "\"")
+  in
+
+  let string_ff_graph = (gmap ff_graph string_of_int) in 
+  let final_graph = e_fold string_ff_graph create_arcs (gmap init_graph string_of_int) in
+  e_fold final_graph create_null_flow_arcs final_graph

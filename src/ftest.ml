@@ -29,20 +29,21 @@ let () =
   (*let gmap_graph = gmap graph (fun x -> x^"!") in*)
 
   let int_graph = gmap graph int_of_string in
-    (*let graph_plus_100 = gmap (add_arc int_graph 3 1 100) string_of_int in*)
-    (*let graph_plus_100 = gmap (add_arc int_graph 2 5 100) string_of_int in*)
+  (*let graph_plus_100 = gmap (add_arc int_graph 3 1 100) string_of_int in*)
+  (*let graph_plus_100 = gmap (add_arc int_graph 2 5 100) string_of_int in*)
 
 
   (*let path_test = find_path int_graph [] source sink in
-  Printf.printf "path: %s\n%!" (path_to_string source path_test);
+    Printf.printf "path: %s\n%!" (path_to_string source path_test);
 
-  let path = Option.get path_test in
-  let flow_val = get_min_flow_path int_graph 1000 source path in
-  let residual_graph = build_residual_graph int_graph flow_val source path in*)
+    let path = Option.get path_test in
+    let flow_val = get_min_flow_path int_graph 1000 source path in
+    let residual_graph = build_residual_graph int_graph flow_val source path in*)
 
   let final_graph = fordfulkerson int_graph source sink in
+  let final_string_graph = get_final_string_graph int_graph final_graph in
 
   (* Rewrite the graph that has been read and potentially modified. *)
-  let () = export outfile (gmap final_graph string_of_int) in
+  let () = export outfile final_string_graph in
   ()
 
