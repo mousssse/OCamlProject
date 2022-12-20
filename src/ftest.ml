@@ -20,8 +20,9 @@ let () =
   in
 
   (* Open file *)
-  let (mbp_graph, mbp_val) = mbp (from_mbp_file infile) in
-  Printf.printf "mbp value: %d\n" mbp_val;
+  let (from_title, to_title, init_graph) = from_mbp_file infile in
+  let (mbp_graph, mbp_val) = mbp init_graph in
+  Printf.printf "Maximum number of %s(s) that can get a %s is %d\n" from_title to_title mbp_val;
 
   (* Rewrite the graph that has been read and potentially modified. *)
   let () = export outfile mbp_graph in

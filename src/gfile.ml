@@ -163,7 +163,7 @@ let read_from_node id graph line =
     if ind2 = ind1 then graph (* ignoring nodes without out arcs *)
     else
       let to_nodes = String.sub line (ind1) (ind2-ind1) in
-      Printf.printf "to_nodes: [%s]\n" to_nodes; (* To debug *)
+      (*Printf.printf "to_nodes: [%s]\n" to_nodes; (* To debug *)*)
       let graph = new_node graph id in
       create_arcs id graph to_nodes
   with e -> 
@@ -177,33 +177,33 @@ let from_mbp_file path =
 
   (* Read all lines until end of file. 
    * n is the current node counter. *)
-  let rec loop n graph =
+  let rec loop from_title to_title n graph =
     try
       let line = input_line infile in
 
       (* Remove leading and trailing spaces. *)
       let line = String.trim line in
 
-      let (n2, graph2) =
+      let (from_title2, to_title2, n2, graph2) =
         (* Ignore empty lines *)
-        if line = "" then (n, graph)
+        if line = "" then (from_title, to_title, n, graph)
 
         (* The first character of a line determines its content : t or f. *)
         else match line.[0] with
-          | '1' -> (n, graph) (* Ignore title line of "from nodes" *)
-          | '2' -> (n, graph) (* Ignore title line of "to nodes" *)
-          | 't' -> (n+1, read_to_node n graph line)
-          | 'f' -> (n+1, read_from_node n graph line)
+          | '1' -> (Scanf.sscanf line "1 %s" (fun title -> title), to_title, n, graph)   (* Getting title line of "from nodes" *)
+          | '2' -> (from_title, Scanf.sscanf line "2 %s" (fun title -> title), n, graph) (* Getting title line of "to nodes" *)
+          | 't' -> (from_title, to_title, n+1, read_to_node n graph line)
+          | 'f' -> (from_title, to_title, n+1, read_from_node n graph line)
 
           (* It should be a comment, otherwise we complain. *)
-          | _ -> (n, read_comment graph line)
+          | _ -> (from_title, to_title, n, read_comment graph line)
       in      
-      loop n2 graph2
+      loop from_title2 to_title2 n2 graph2
 
-    with End_of_file -> graph (* Done *)
+    with End_of_file -> (from_title, to_title, graph) (* Done *)
   in
 
-  let final_graph = loop 0 empty_graph in
+  let (from_title, to_title, final_graph) = loop "" "" 0 empty_graph in
 
   close_in infile ;
-  final_graph
+  (from_title, to_title, final_graph)
