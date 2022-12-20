@@ -1,0 +1,23 @@
+%% Jobs/applicants graph #1
+
+%% From/To node names
+1 applicant
+2 job
+
+%% To nodes
+
+t     % This is "to node" #0, with its coordinates (which are not used by the algorithms).
+t
+t
+t
+t
+t     % This is "to node" #5.
+
+%% From nodes, edges
+
+f [1 2]    %there is an edge from f to 1 and from f to 2
+f []       %there are no edges from f
+f [0 3]    
+f [2] 
+f [2 3] 
+f [5] 
