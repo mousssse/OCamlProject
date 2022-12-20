@@ -28,7 +28,7 @@ let clean_graph graph =
   let new_graph = e_fold graph (fun gr from_id to_id lbl -> new_arc gr from_id to_id lbl) new_graph in
   new_graph 
 
-  
+
 (* adding and connecting the source and sink nodes in the graph *)
 let add_source_and_sink graph =
   (* getting ids + creating source and sink nodes *)
@@ -37,4 +37,8 @@ let add_source_and_sink graph =
   let sink_id = available_id new_graph in
   let new_graph = new_node new_graph sink_id in
   (* creating all the arcs *)
-  n_fold graph (fun gr id -> if out_arcs graph id = [] then new_arc gr id sink_id 1 else new_arc gr source_id id 1) new_graph
+  (
+    source_id, 
+    sink_id, 
+    n_fold graph (fun gr id -> if out_arcs graph id = [] then new_arc gr id sink_id 1 else new_arc gr source_id id 1) new_graph
+  )

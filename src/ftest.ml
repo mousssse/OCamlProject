@@ -21,7 +21,7 @@ let () =
 
   (* Open file *)
   let graph = clean_graph (from_mbp_file infile) in
-  let graph1 = add_source_and_sink graph in
+  let (source_id, sink_id, graph1) = add_source_and_sink graph in
 
   (* Rewrite the graph that has been read and potentially modified. *)
   let () = export outfile (gmap graph1 string_of_int) in
