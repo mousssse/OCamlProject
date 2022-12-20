@@ -160,9 +160,7 @@ let read_from_node id graph line =
   try 
     let ind1 = (String.index_from line 0 '[')+1 in
     let ind2 = String.index_from line 0 ']' in
-    (* if no out arcs: just adding the node *)
-    (* TODO: think abt from/to nodes that connect to no one, we don't need them... *)
-    if ind2 = ind1 then new_node graph id
+    if ind2 = ind1 then graph (* ignoring nodes without out arcs *)
     else
       let to_nodes = String.sub line (ind1) (ind2-ind1) in
       Printf.printf "to_nodes: [%s]\n" to_nodes; (* To debug *)
