@@ -1,5 +1,6 @@
 open Graph
 open Tools
+open Fordfulkerson
 
 let available_id graph =
   let rec loop graph acu =
@@ -42,3 +43,12 @@ let add_source_and_sink graph =
     sink_id, 
     n_fold graph (fun gr id -> if out_arcs graph id = [] then new_arc gr id sink_id 1 else new_arc gr source_id id 1) new_graph
   )
+
+
+let mbp graph = 
+  let (source, sink, graph) = add_source_and_sink (clean_graph graph) in
+  let mbp_graph = get_final_string_graph graph (fordfulkerson graph source sink) in
+  let mbp_val = n_fold mbp_graph (fun mbp id -> if find_arc mbp_graph source id = None then mbp else mbp + 1) 0 in
+  let final_graph = clone_nodes_without [source ; sink] mbp_graph in
+  let final_graph = e_fold mbp_graph (fun gr from_id to_id lbl -> if from_id = source then gr else if to_id = sink then gr else new_arc gr from_id to_id lbl) final_graph in
+  (final_graph, mbp_val)
