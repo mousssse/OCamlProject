@@ -7,7 +7,10 @@ type path = string
 
 (* Values are read as strings. *)
 val from_file: path -> string graph
+
+(* These are specifically for mbp and bg graphs, not any graphs, values are read as int *)
 val from_mbp_file: path -> string * string * int graph
+val from_bg_file: path -> (int * int) graph
 
 (* Similarly, we write only a string graph.
  * If necessary, use gmap (to be written by you) to prepare the input graph. *)

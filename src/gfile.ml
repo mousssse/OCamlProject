@@ -207,3 +207,67 @@ let from_mbp_file path =
 
   close_in infile ;
   (from_title, to_title, final_graph)
+
+
+
+
+
+(* Format of bg text files:
+   % This is a comment
+
+   % A node with its coordinates (which are not used).
+   n 88.8 209.7
+   n 408.9 183.0
+
+   % The first node has id 0, the next is 1, and so on.
+
+   % Edges: e source dest flow cost
+   e 0 1 30 7
+   e 0 2 20 6
+
+*)
+
+(* Reads a line with an arc for a bg graph file. *)
+let read_bg_arc graph line =
+  try Scanf.sscanf line "e %d %d %d %d"
+        (fun id1 id2 flow cost -> new_arc (ensure (ensure graph id1) id2) id1 id2 (flow, cost))
+  with e ->
+    Printf.printf "Cannot read arc in line - %s:\n%s\n%!" (Printexc.to_string e) line ;
+    failwith "from_file"
+
+
+
+let from_bg_file path =
+
+  let infile = open_in path in
+
+  (* Read all lines until end of file. 
+    * n is the current node counter. *)
+  let rec loop n graph =
+    try
+      let line = input_line infile in
+
+      (* Remove leading and trailing spaces. *)
+      let line = String.trim line in
+
+      let (n2, graph2) =
+        (* Ignore empty lines *)
+        if line = "" then (n, graph)
+
+        (* The first character of a line determines its content : n or e. *)
+        else match line.[0] with
+          | 'n' -> (n+1, read_node n graph line)
+          | 'e' -> (n, read_bg_arc graph line)
+
+          (* It should be a comment, otherwise we complain. *)
+          | _ -> (n, read_comment graph line)
+      in      
+      loop n2 graph2
+
+    with End_of_file -> graph (* Done *)
+  in
+
+  let final_graph = loop 0 empty_graph in
+
+  close_in infile ;
+  final_graph

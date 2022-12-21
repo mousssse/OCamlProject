@@ -4,6 +4,8 @@ build:
 	ocamlbuild ftest.native
 	@echo "\n==== COMPILING MAXIMUM BIPARTITE MATCHING ====\n"
 	ocamlbuild mbptest.native
+	@echo "\n==== COMPILING BUSACKER GOWEN ====\n"
+	ocamlbuild bgtest.native
 
 format:
 	ocp-indent --inplace src/*
@@ -22,7 +24,13 @@ demo: build
 	@echo "\n==== RESULT ==== (content of outfile_mbp) \n"
 	@cat outfile_mbp
 
+	@echo "\n==== EXECUTING BUSACKER GOWEN ====\n"
+	./bgtest.native graphs/bg_graph 0 4 outfile_bg
+	@echo "\n==== RESULT ==== (content of outfile_bg) \n"
+	@cat outfile_bg
+
 clean:
 	-rm -rf _build/
 	-rm ftest.native
 	-rm mbptest.native
+	-rm bgtest.native
