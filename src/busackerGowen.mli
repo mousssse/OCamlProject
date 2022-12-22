@@ -24,3 +24,8 @@ val get_min_flow_path: label graph -> id -> path -> int
  *   returns the residual graph, where costs and flows of the arcs of the path have been updated
 *)
 val build_residual_graph: label graph -> int -> id -> path -> label graph
+
+(* busackerGowen gr source sink 
+ *   returns the final residual graph of the busacker gowen algorithm
+*)
+val busackerGowen: label graph -> id -> id -> label graph

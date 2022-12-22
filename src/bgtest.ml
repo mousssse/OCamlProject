@@ -23,7 +23,7 @@ let () =
   (* Open file *)
   let graph = from_bg_file infile in
 
-  let (path_opt, cost) = find_path graph source sink in
+  (*let (path_opt, cost) = find_path graph source sink in
   let path = (Option.get path_opt) in
   let min_flow = get_min_flow_path graph source path in
   Printf.printf "path: %s. cost: %d. min flow: %d.\n%!"
@@ -32,8 +32,10 @@ let () =
     (min_flow)
   ;
 
-  let residual_graph = build_residual_graph graph min_flow source path in
-  let string_graph = gmap residual_graph (fun (flow, cost) -> "\"" ^ string_of_int flow ^ " (" ^ string_of_int cost ^ ")\"") in
+  let residual_graph = build_residual_graph graph min_flow source path in*)
+
+  let final_graph = busackerGowen graph source sink in
+  let string_graph = gmap final_graph (fun (flow, cost) -> "\"" ^ string_of_int flow ^ " (" ^ string_of_int cost ^ ")\"") in
 
   (* Rewrite the graph that has been read and potentially modified. *)
   let () = export outfile string_graph in

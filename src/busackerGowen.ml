@@ -106,3 +106,14 @@ let rec build_residual_graph (graph: label graph) (flow_val: int) (from_id: id) 
   | to_id :: rest_path ->
     let updated_arcs = update_arcs graph from_id to_id flow_val in
     build_residual_graph updated_arcs flow_val to_id rest_path
+
+
+let rec busackerGowen (graph: label graph) (source: id) (sink: id) = 
+  let (path_option, _) = find_path graph source sink in
+  match path_option with
+  | None -> graph (* Done *)
+  | Some(path) ->
+    let flow_val = get_min_flow_path graph source path in
+    let residual_graph = build_residual_graph graph flow_val source path in
+    (*Printf.printf "path: %s\n%!" (path_to_string src path_option);*)
+    busackerGowen residual_graph source sink
