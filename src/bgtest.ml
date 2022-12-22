@@ -25,7 +25,11 @@ let () =
   let string_graph = gmap graph (fun (flow, cost) -> "\"" ^ string_of_int flow ^ " (" ^ string_of_int cost ^ ")\"") in
 
   let (path_opt, cost) = find_path graph source sink in
-  Printf.printf "path: %s. cost: %d \n%!" (path_to_string source path_opt) cost;
+  Printf.printf "path: %s. cost: %d. min flow: %d.\n%!"
+    (path_to_string source path_opt) 
+    cost 
+    (get_min_flow_path graph source (Option.get path_opt))
+  ;
 
   (* Rewrite the graph that has been read and potentially modified. *)
   let () = export outfile string_graph in

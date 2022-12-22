@@ -2,6 +2,7 @@ open Graph
 
 type label = int * int
 type path = id list
+exception Path_error of string
 
 
 (* returns a path between two nodes, or None if such a path doesn't exist *)
@@ -49,3 +50,24 @@ let path_to_string (source: id) (path_option: path option) =
       | id :: rest_path -> (string_of_int id) ^ " -> " ^ (loop rest_path)
     in
     (string_of_int source) ^ " -> " ^ loop path
+
+
+
+(* Finds the minimum flow value in the path given *)
+let get_min_flow_path (graph: label graph) (from_id: id) (path: path) = 
+
+(* returns the flow value of the first arc in the path *)
+let init_acu graph source first_id_in_path =
+  match find_arc graph source first_id_in_path with
+  | None -> raise (Path_error ("The path given doesn't exist in the graph. No arc from source #" ^ string_of_int from_id ^ " to #" ^ string_of_int first_id_in_path))
+  | Some(flow, _) -> flow 
+in
+
+let rec loop graph acu from_id = function
+| [] -> acu
+| to_id :: rest_path ->
+  match find_arc graph from_id to_id with
+  | None -> raise (Path_error ("The path given doesn't exist in the graph. No arc from #" ^ string_of_int from_id ^ " to #" ^ string_of_int to_id))
+  | Some(flow, _) -> loop graph (min acu flow) to_id rest_path
+in
+loop graph (init_acu graph from_id (List.hd path)) from_id path
