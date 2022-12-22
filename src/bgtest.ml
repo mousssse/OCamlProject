@@ -24,6 +24,9 @@ let () =
   let graph = from_bg_file infile in
   let string_graph = gmap graph (fun (flow, cost) -> "\"" ^ string_of_int flow ^ " (" ^ string_of_int cost ^ ")\"") in
 
+  let (path_opt, cost) = find_path graph source sink in
+  Printf.printf "path: %s. cost: %d \n%!" (path_to_string source path_opt) cost;
+
   (* Rewrite the graph that has been read and potentially modified. *)
   let () = export outfile string_graph in
   ()

@@ -4,4 +4,5 @@ open Graph
 type label = int * int
 type path = id list
 
-(*val find_path: label graph -> id -> id -> path option*)
+val find_path: label graph -> id -> id -> path option * int
+val path_to_string: id -> path option -> string
