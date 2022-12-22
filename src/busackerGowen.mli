@@ -28,4 +28,9 @@ val build_residual_graph: label graph -> int -> id -> path -> label graph
 (* busackerGowen gr source sink 
  *   returns the final residual graph of the busacker gowen algorithm
 *)
-val busackerGowen: label graph -> id -> id -> label graph
+val busackerGowen: label graph -> id -> id -> label graph * int * int
+
+(* get_final_string_graph init_graph bg_graph 
+ *   returns a clean string graph version of the result of the busacker gowen algorithm
+*)
+val get_final_string_graph: label graph -> label graph -> string graph

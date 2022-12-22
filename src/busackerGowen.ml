@@ -109,11 +109,54 @@ let rec build_residual_graph (graph: label graph) (flow_val: int) (from_id: id) 
 
 
 let rec busackerGowen (graph: label graph) (source: id) (sink: id) = 
-  let (path_option, _) = find_path graph source sink in
-  match path_option with
-  | None -> graph (* Done *)
-  | Some(path) ->
-    let flow_val = get_min_flow_path graph source path in
-    let residual_graph = build_residual_graph graph flow_val source path in
-    (*Printf.printf "path: %s\n%!" (path_to_string src path_option);*)
-    busackerGowen residual_graph source sink
+  let rec get_flow = function 
+  | [] -> 0
+  | (id, (flow, _)) :: rest_arcs -> flow + get_flow rest_arcs
+  in
+
+  let rec loop graph source sink acu =
+    let (path_option, cost) = find_path graph source sink in
+    match path_option with
+    | None -> (graph, acu) (* Done *)
+    | Some(path) ->
+      let flow_val = get_min_flow_path graph source path in
+      let residual_graph = build_residual_graph graph flow_val source path in
+      (*Printf.printf "path: %s\n%!" (path_to_string src path_option);*)
+      loop residual_graph source sink (acu + flow_val*cost)
+  in
+  let (final_graph, total_cost) = loop graph source sink 0 in
+  (final_graph, total_cost, get_flow (out_arcs final_graph sink))
+
+
+  
+(* creates a string graph from the final flow graph with max_flow/capacity (cost) labelled arcs *)
+let get_final_string_graph (init_graph: label graph) (bg_graph: label graph) = 
+
+  (* For a given flow arc, will create the flow/capacity (cost) arc on the initial graph *)
+  let create_arcs init_graph from_id to_id label =
+    let flow = List.hd (String.split_on_char ' ' label) in
+    (* The arcs containing the flow are the ones that are in the opposite directions
+       from the arcs inside of the initial graph *)
+    match find_arc init_graph to_id from_id with 
+    | Some(label) ->
+        let label_list = String.split_on_char ' ' label in
+        let capacity = List.hd label_list in
+        let cost = List.nth label_list 1 in
+        new_arc (init_graph) (to_id) (from_id) ("\"" ^ flow ^ "/" ^ capacity ^ " (" ^ cost ^ ")\"")
+    | None -> init_graph
+  in
+
+  (* For the arcs with no flow going through them, will create a 0/capacity (cost) label *)
+  let create_null_flow_arcs final_graph from_id to_id label =
+    (* The arcs with no flow are the ones that haven't changed in the inital graph, they dont contain a '/' yet *)
+    if String.contains_from label 0 '/' then final_graph
+    else 
+      let label = String.split_on_char ' ' label in
+      let capacity = List.hd label in
+      let cost = int_of_string (List.nth label 1) in
+      new_arc (final_graph) (from_id) (to_id) ("\"0/" ^ capacity ^ " (" ^ string_of_int (-cost) ^ ")\"")
+  in
+
+  let string_bg_flow_graph = gmap bg_graph (fun (flow, cost) -> string_of_int flow ^ " " ^ string_of_int cost) in 
+  let final_graph = e_fold string_bg_flow_graph create_arcs (gmap init_graph (fun (flow, cost) -> string_of_int flow ^ " " ^ string_of_int cost)) in
+  e_fold final_graph create_null_flow_arcs final_graph

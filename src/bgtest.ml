@@ -34,8 +34,9 @@ let () =
 
   let residual_graph = build_residual_graph graph min_flow source path in*)
 
-  let final_graph = busackerGowen graph source sink in
-  let string_graph = gmap final_graph (fun (flow, cost) -> "\"" ^ string_of_int flow ^ " (" ^ string_of_int cost ^ ")\"") in
+  let (final_graph, total_cost, max_flow) = busackerGowen graph source sink in
+  let string_graph = get_final_string_graph graph final_graph in
+  Printf.printf "The solution has a max flow of %d with a min cost of %d" max_flow total_cost;
 
   (* Rewrite the graph that has been read and potentially modified. *)
   let () = export outfile string_graph in
