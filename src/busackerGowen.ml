@@ -1,4 +1,5 @@
 open Graph
+open Tools
 
 type label = int * int
 type path = id list
@@ -20,6 +21,9 @@ let find_path (gr: label graph) (from_id: id) (to_id: id) =
 
         (* node has already been visited *)
         if List.mem id visited then loop rest_arcs
+        
+        (* node is unreachable *)
+        else if cost = max_int then loop rest_arcs 
 
         (* we found the destination node! *)
         else if id == to_id then min_cost_path (loop rest_arcs) (Some(List.append visited [id]), total_cost + cost)
@@ -71,3 +75,34 @@ let rec loop graph acu from_id = function
   | Some(flow, _) -> loop graph (min acu flow) to_id rest_path
 in
 loop graph (init_acu graph from_id (List.hd path)) from_id path
+
+
+
+let update_arcs graph from_id to_id min_flow =
+
+  Printf.printf "from #%d to #%d\n%!" from_id to_id;
+  let in_arc = find_arc graph to_id from_id in
+  let out_arc = find_arc graph from_id to_id in
+
+  (* updating the out arc *)
+  match out_arc with
+  | None -> raise (Graph_error ("No arc from node #" ^ string_of_int from_id ^ " to node #" ^ string_of_int to_id))
+  | Some(flow, cost) -> 
+       let new_flow = flow - min_flow in
+       let updated_graph = 
+        if new_flow = 0 then del_arc graph from_id to_id
+        else new_arc graph from_id to_id (new_flow, cost) 
+      in
+
+       (* updating the in arc *)
+       match in_arc with
+       | None -> new_arc updated_graph to_id from_id (min_flow, (-cost))
+       | Some(flow, cost) -> new_arc updated_graph to_id from_id ((flow + min_flow), cost)
+
+
+(* Updates in and out arcs on the path with the update of flow value to build the new residual graph *)
+let rec build_residual_graph (graph: label graph) (flow_val: int) (from_id: id) = function
+  | [] -> graph
+  | to_id :: rest_path ->
+    let updated_arcs = update_arcs graph from_id to_id flow_val in
+    build_residual_graph updated_arcs flow_val to_id rest_path

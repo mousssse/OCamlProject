@@ -19,3 +19,8 @@ val path_to_string: id -> path option -> string
  *   returns the minimum flow value in the given path
 *)
 val get_min_flow_path: label graph -> id -> path -> int
+
+(* build_residual_graph gr flow source path 
+ *   returns the residual graph, where costs and flows of the arcs of the path have been updated
+*)
+val build_residual_graph: label graph -> int -> id -> path -> label graph
