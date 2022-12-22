@@ -33,11 +33,11 @@ let () =
   (*let graph_plus_100 = gmap (add_arc int_graph 2 5 100) string_of_int in*)
 
 
-  (*let path_test = find_path int_graph [] source sink in
+  (*let path_test = find_path int_graph source sink in
     Printf.printf "path: %s\n%!" (path_to_string source path_test);
 
     let path = Option.get path_test in
-    let flow_val = get_min_flow_path int_graph 1000 source path in
+    let flow_val = get_min_flow_path int_graph source path in
     let residual_graph = build_residual_graph int_graph flow_val source path in*)
 
   let final_graph = fordfulkerson int_graph source sink in
