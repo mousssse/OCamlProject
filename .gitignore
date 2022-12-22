@@ -1,5 +1,5 @@
 _build/
-ftest.native
-outfile
-ftest.byte
+*.native
+outfile*
+*.byte
 *~
