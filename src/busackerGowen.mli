@@ -6,7 +6,7 @@ type path = id list
 
 (* find_path gr id1 id2 
  *   returns (None, max_int) if no path can be found.
- *   returns (Some p, c) if a path p of cost c from id1 to id2 has been found. 
+ *   returns (Some p, c) if a path p of minimal cost c from id1 to id2 has been found. 
 *)
 val find_path: label graph -> id -> id -> path option * int
 
