@@ -26,7 +26,7 @@ let clean_graph graph =
   
   (* new_graph is the given graph without the disconnected nodes and with the same arcs*)
   let new_graph = clone_nodes_without disconnected_nodes graph in
-  let new_graph = e_fold graph (fun gr from_id to_id lbl -> new_arc gr from_id to_id lbl) new_graph in
+  let new_graph = e_fold graph new_arc new_graph in
   new_graph 
 
 
@@ -48,7 +48,14 @@ let add_source_and_sink graph =
 let mbp graph = 
   let (source, sink, graph) = add_source_and_sink (clean_graph graph) in
   let mbp_graph = get_final_string_graph graph (fordfulkerson graph source sink) in
-  let mbp_val = n_fold mbp_graph (fun mbp id -> if find_arc mbp_graph source id = None then mbp else mbp + 1) 0 in
+
+  (* getting a pretty final graph without source/sink nodes, without 0/1 arcs and with label-less arcs *)
   let final_graph = clone_nodes_without [source ; sink] mbp_graph in
-  let final_graph = e_fold mbp_graph (fun gr from_id to_id lbl -> if from_id = source then gr else if to_id = sink then gr else new_arc gr from_id to_id lbl) final_graph in
+  let final_graph = e_fold mbp_graph (fun gr id1 id2 lbl -> 
+                                        if id1 = source then gr 
+                                        else if id2 = sink then gr 
+                                        else if String.contains_from lbl 0 '0' then gr
+                                        else new_arc gr id1 id2 "\"\"") final_graph in
+
+  let mbp_val = n_fold final_graph (fun mbp id -> mbp + 1) 0 in
   (final_graph, mbp_val)
